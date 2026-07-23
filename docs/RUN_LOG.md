@@ -353,3 +353,50 @@ Add pure helpers for Tehran time-of-day, active-period detection, and the next u
 ### Next recommended task
 
 Add previous/current/next week navigation. Store the displayed-week offset relative to the live Tehran week, calculate the displayed Saturday and unit rotation from that offset, and keep today/current/next highlighting visible only for the live week. Keep unit lookup and manual overrides for later runs.
+
+## 2026-07-23 - Run 8: Week navigation
+
+### Steps taken
+
+- Read the current README, implementation plan, handoff, and complete run log before making changes.
+- Inspected the latest application, live-status helpers, schedule resolution, and recent commits.
+- Added `src/domain/weekNavigation.ts` to derive a displayed Saturday, anchor rotation offset, current-week flag, and Persian relative-week label from an integer offset relative to the live Tehran week.
+- Added `src/domain/weekNavigation.test.ts` covering the live week, previous and next weeks, Gregorian month and year boundaries, Persian labels for larger offsets, and invalid fractional offsets.
+- Added React state for the displayed relative week while preserving the existing 30-second live clock refresh.
+- Added Persian controls for the previous week, return to the current week, and the next week.
+- Recalculated Jalali dates and all 39 unit assignments for the selected week.
+- Limited current-day, active-period, and next-period summaries and highlights to the actual live week.
+- Added a Persian information panel while browsing non-live weeks.
+- Added `src/navigation.css` with modest responsive button and information-panel styling and loaded it from `src/main.tsx`.
+- Updated the README and handoff documentation.
+
+### Verification
+
+- Compiled the exact week-navigation helper with TypeScript 5.8.3 under strict settings against compatible dependency declarations.
+- Ran Node.js 22 assertions confirming previous/next Saturdays, matching anchor rotation offsets, Gregorian year crossings, and Persian labels such as `۳ هفته قبل` and `۴ هفته بعد`.
+- Fetched and reviewed the committed navigation helper, tests, application, stylesheet, and main entry point.
+- Confirmed the displayed schedule uses `liveWeekOffset + relativeWeekOffset` and dates begin from the selected Saturday.
+- Confirmed the existing outside-week status behavior removes today, active-period, and next-period positions while browsing another week.
+- Full repository dependency installation, actual Vitest execution, linting, Vite production build, and browser rendering remain pending because the GitHub connector does not provide a repository shell or deployed preview.
+
+### Decisions
+
+- Store navigation as an unbounded integer offset relative to the live Tehran week rather than as a separate date string.
+- Keep the return-to-current-week control disabled while already viewing the live week.
+- Hide live status cards and live-only legend entries when browsing other weeks to avoid misleading messages.
+- Keep navigation styling in a small separate stylesheet instead of expanding the existing large schedule stylesheet.
+
+### Issues
+
+- A deployed browser preview is still unavailable, so final button spacing and visual behavior have only been reviewed statically.
+- Distant week calculations assume the inferred weekly rotation continues indefinitely unless a later override changes it.
+
+### Steps left
+
+- Add unit lookup with local persistence.
+- Add manual schedule overrides.
+- Add CI, deployment, browser verification, and final maintenance documentation.
+
+### Next recommended task
+
+Add a unit selector for units 1 through 39, persist a valid selection in `localStorage`, locate that unit's private period in the displayed week, show a concise Persian date/time summary, and highlight the selected unit in both responsive schedule views. Keep manual overrides for a later run.
