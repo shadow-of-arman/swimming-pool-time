@@ -22,6 +22,8 @@ The production output is the complete `dist/` directory created by `npm run buil
 
 `Deploy GitHub Pages` runs on pushes to `main` and manual dispatch. It builds the application, uploads the Pages artifact, and publishes the production site.
 
+The pool favicon and installed-app PNG are generated automatically before development and production builds from the verified source parts under `assets/`.
+
 ## Downloadable build artifact
 
 After a successful `Static site artifact` run:
@@ -65,7 +67,7 @@ A verified `package-lock.json` is committed. Use `npm ci` for clean verification
 Before replacing or approving the hosted version:
 
 1. Confirm `Repository checks` passes.
-2. Confirm `Static site artifact` passes and contains `index.html` plus generated assets.
+2. Confirm `Static site artifact` passes and contains `index.html`, `site.webmanifest`, `pool-icon-512.png`, and generated assets.
 3. Confirm `Deploy GitHub Pages` passes.
 4. Open the live site at a phone-sized viewport around 390 pixels wide.
 5. Open the live site at a desktop viewport around 1440 pixels wide.
@@ -74,10 +76,14 @@ Before replacing or approving the hosted version:
 8. Confirm the page direction is RTL and all visible UI text is Persian.
 9. Confirm dates and time ranges remain visually ordered.
 10. Confirm the displayed week begins on Saturday and matches Tehran time.
-11. Select at least one unit and confirm its highlighted period changes while browsing previous and next weeks.
-12. Confirm the current-day and active-period states only appear for the live Tehran week.
-13. Confirm refreshing the page preserves a valid selected unit when browser storage is available.
-14. Confirm there is no unexpected horizontal overflow or browser-console error.
+11. Select at least one unit and confirm it is highlighted in the displayed calendar week.
+12. Confirm changing the calendar week does not change the week shown in the unit lookup result.
+13. Confirm the unit lookup defaults to `هفته جاری`, changes independently to `هفته بعد`, and offers `هفته جاری` while next week is selected.
+14. Confirm the current-day and active-period states only appear for the live calendar week.
+15. Confirm refreshing the page preserves a valid selected unit when browser storage is available.
+16. Confirm the browser tab uses the supplied pool favicon.
+17. Add the site to a phone Home Screen and confirm the supplied pool icon and standalone launch. Remove an older shortcut first if its cached icon remains.
+18. Confirm there is no unexpected horizontal overflow or browser-console error.
 
 ## Schedule maintenance
 
@@ -121,5 +127,7 @@ The MVP should be marked complete only after:
 - the production GitHub Pages URL is inspected
 - mobile and desktop RTL rendering is verified in a browser
 - the برج ارغوان header and calendar-adjacent week navigation are verified
-- the Tehran week, navigation, current-period state, and unit lookup are exercised successfully
+- independent calendar and unit-lookup week behavior is exercised successfully
+- the supplied favicon and Home Screen icon are verified
+- the Tehran week, current-period state, and unit persistence are exercised successfully
 - the final hosting location is recorded in this document or the README
