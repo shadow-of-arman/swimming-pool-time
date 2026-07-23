@@ -16,7 +16,7 @@ A small Persian-first website for showing the apartment swimming-pool schedule. 
 
 ## Current status
 
-**Phase:** Persian date and number formatting complete; the responsive schedule interface is next.
+**Phase:** Read-only responsive current-week interface complete; current and next period behavior is next.
 
 ### Completed
 
@@ -43,10 +43,13 @@ A small Persian-first website for showing the apartment swimming-pool schedule. 
 - [x] Added numeric, concise, and full Jalali date labels using the built-in Persian calendar.
 - [x] Added Saturday-to-Friday Jalali week-range formatting.
 - [x] Added tests for both anchor Saturdays and Persian month and year boundaries.
+- [x] Replaced the placeholder with the calculated current-week schedule.
+- [x] Added Persian week and day date labels to the interface.
+- [x] Added mobile day cards and a desktop weekly schedule grid.
+- [x] Added responsive public, private-unit, and cleaning period styling.
 
 ### Remaining
 
-- [ ] Build the complete Persian RTL responsive schedule interface.
 - [ ] Add current-period and next-period highlighting.
 - [ ] Add unit lookup with local persistence.
 - [ ] Add previous/current/next week navigation.
