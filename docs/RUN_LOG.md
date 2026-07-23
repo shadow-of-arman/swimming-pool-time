@@ -536,3 +536,49 @@ Add static deployment configuration without adding external secrets or server in
 ### Next recommended task
 
 Perform final delivery verification. Inspect the latest verification and static-artifact workflow results, resolve any failures, and publish or download the generated artifact through the confirmed static host. Verify the Persian RTL interface at mobile and desktop widths, document the hosting and maintenance procedure, and mark the MVP complete only after those checks pass. Do not add a backend, admin dashboard, secrets, or manual schedule overrides.
+
+## 2026-07-23 - Run 12: Delivery and maintenance guide
+
+### Steps taken
+
+- Read the current README and every file under `docs/` before making changes.
+- Inspected the latest repository commits and the final-delivery handoff state.
+- Queried the latest commit status; no status contexts were exposed, and the available workflow-run connector remained limited to pull-request-triggered runs.
+- Added `docs/DELIVERY.md` with host-neutral artifact deployment instructions.
+- Added a release checklist covering representative mobile and desktop widths, Persian RTL behavior, Tehran-week calculation, navigation, current-period state, and unit persistence.
+- Documented fixed-rotation maintenance constraints, dependency-update procedure, static rollback, and final MVP sign-off conditions.
+- Updated the README and handoff documentation without changing application or schedule logic.
+- Kept manual schedule overrides, backend services, admin functionality, authentication, and deployment secrets out of scope.
+
+### Verification
+
+- Reviewed the delivery guide against the committed `Repository checks` and `Static site artifact` workflows.
+- Confirmed the documented workflow names, `swimming-pool-time-static` artifact name, 14-day retention, `dist/` output, and relative Vite asset base match repository configuration.
+- Confirmed the application has no client-side routes and therefore does not require static-host SPA fallback rewriting.
+- Confirmed the maintenance guide protects the two reference weeks and requires updated tests before any permanent rotation-rule change.
+- The GitHub connector still could not expose push-triggered workflow results or download an artifact without a run identifier.
+- The local container could not resolve GitHub or the npm registry, so a lockfile, production bundle, hosted preview, and browser screenshots could not be produced.
+
+### Decisions
+
+- Finish provider-independent delivery and maintenance documentation before a hosting provider is confirmed.
+- Treat successful workflows and real browser inspection as mandatory external sign-off, not as completed based on static review.
+- Keep the production release unit as the complete generated `dist/` directory.
+- Use representative widths of approximately 390 pixels and 1440 pixels for final responsive verification.
+
+### Issues
+
+- Both push-triggered GitHub Actions results remain inaccessible through the available connector.
+- No hosted preview is available for final Persian RTL browser inspection.
+- No verified npm installation is available to generate a lockfile.
+
+### Steps left
+
+- Inspect and resolve the latest `Repository checks` and `Static site artifact` workflow results.
+- Obtain and deploy or preview the generated static artifact.
+- Execute the browser checklist in `docs/DELIVERY.md` on mobile and desktop widths.
+- Record the hosting location, generate a lockfile if feasible, and mark the MVP complete only after successful verification.
+
+### Next recommended task
+
+Perform only the remaining external verification work. Inspect the latest GitHub Actions runs, fix any reported failure, obtain the `swimming-pool-time-static` artifact, and deploy it to the confirmed host or approved preview. Run the documented mobile and desktop checklist, record the final hosting location and results, and mark the MVP complete only after those checks pass. Do not add a backend, admin dashboard, secrets, or manual schedule overrides.
