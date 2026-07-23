@@ -16,7 +16,7 @@ A small Persian-first website for showing the apartment swimming-pool schedule. 
 
 ## Current status
 
-**Phase:** Read-only responsive current-week interface complete; current and next period behavior is next.
+**Phase:** Current day, active period, and next period behavior complete; week navigation is next.
 
 ### Completed
 
@@ -47,12 +47,16 @@ A small Persian-first website for showing the apartment swimming-pool schedule. 
 - [x] Added Persian week and day date labels to the interface.
 - [x] Added mobile day cards and a desktop weekly schedule grid.
 - [x] Added responsive public, private-unit, and cleaning period styling.
+- [x] Added Tehran hour, minute, and second extraction.
+- [x] Added pure active-period and next-period detection with boundary tests.
+- [x] Added automatic clock refresh while the page remains open.
+- [x] Highlighted today, the active period, and the next period on mobile and desktop.
+- [x] Added Persian current-period and next-period summary cards.
 
 ### Remaining
 
-- [ ] Add current-period and next-period highlighting.
-- [ ] Add unit lookup with local persistence.
 - [ ] Add previous/current/next week navigation.
+- [ ] Add unit lookup with local persistence.
 - [ ] Add manual override configuration.
 - [ ] Add GitHub Actions for build and tests.
 - [ ] Add deployment configuration and final documentation.
