@@ -4,6 +4,9 @@ node_modules/
 # Build output
 dist/
 
+# Generated static assets
+public/pool-icon-512.png
+
 # Local environment files
 .env
 .env.*
