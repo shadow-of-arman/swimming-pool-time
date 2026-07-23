@@ -334,7 +334,7 @@ Add pure helpers for Tehran time-of-day, active-period detection, and the next u
 - Keep active and next-period calculations in a pure domain module so future week navigation can reuse the outside-week behavior.
 - Treat a period as active from its start minute up to, but not including, its end minute.
 - Treat gaps between periods as inactive and select the next period by its future start time.
-- Search for the next period only within the displayed Saturday-to-Friday week; after Friday closing, direct the user to the next week.
+- Search for the next period only within the displayed Saturday-to-Friday week; after the final Friday period, direct the user to the next week.
 - Refresh the clock every 30 seconds instead of every render or every second.
 - Keep current and next states visually distinct but restrained.
 
@@ -400,3 +400,51 @@ Add previous/current/next week navigation. Store the displayed-week offset relat
 ### Next recommended task
 
 Add a unit selector for units 1 through 39, persist a valid selection in `localStorage`, locate that unit's private period in the displayed week, show a concise Persian date/time summary, and highlight the selected unit in both responsive schedule views. Keep manual overrides for a later run.
+
+## 2026-07-23 - Run 9: Unit lookup and local persistence
+
+### Steps taken
+
+- Read the current README, implementation plan, handoff, and complete run log before making changes.
+- Inspected the latest commits, displayed-week navigation, resolved schedule, application, and responsive styles.
+- Added `src/domain/unitLookup.ts` with unit-number validation, canonical stored-value parsing, safe local-storage reads and writes, malformed-value cleanup, and displayed-week unit-position lookup.
+- Added `src/domain/unitLookup.test.ts` covering units 1 through 39, malformed and unavailable storage, persistence and clearing, anchor-week positions, later-day positions, browsed-week rotation, and invalid values.
+- Added a Persian unit selector listing units 1 through 39 with Persian display digits.
+- Restored a valid selected unit from local storage without allowing blocked or malformed storage to prevent page use.
+- Added a concise Persian selected-unit summary showing the displayed relative week, weekday, Jalali date, and RTL-safe time range.
+- Highlighted the selected unit in both mobile day cards and the desktop weekly table, including while browsing previous or future weeks.
+- Added a selected-unit legend entry and `src/unitLookup.css` with modest responsive selector, result-card, and highlight styling.
+- Loaded the new stylesheet from `src/main.tsx`.
+- Updated the README and handoff documentation.
+
+### Verification
+
+- Compiled `src/domain/unitLookup.ts` with TypeScript 5.8.3 under strict settings against compatible schedule, resolved-schedule, and Tehran-date declarations.
+- Ran Node.js 22 runtime assertions confirming canonical storage parsing, persistence and clearing, anchor unit 39 lookup, and Sunday unit 6 date lookup.
+- Fetched and reviewed the committed unit-lookup helper, test source, application, stylesheet, and main style import.
+- Confirmed the selector and all new user-facing text are Persian, while stored values remain canonical Latin integer strings.
+- Confirmed selected-unit lookup uses the displayed week's resolved schedule and therefore follows navigation and weekly rotation.
+- Actual repository dependency installation, full Vitest execution, linting, Vite production build, and browser rendering remain pending because the GitHub connector does not provide a repository shell or deployed preview.
+
+### Decisions
+
+- Persist only the unit number, not a week or calculated time, so every displayed week is resolved from current schedule data.
+- Treat local storage as optional and non-critical; failures keep the current session usable.
+- Remove malformed stored values when possible and otherwise fall back to no selection.
+- Keep lookup logic in a pure domain module and presentation styling in a small separate stylesheet.
+- Use a restrained warm outline for the selected unit so it remains distinguishable from active and next-period states.
+
+### Issues
+
+- A deployed browser preview is still unavailable, so selector spacing and combined selected/active highlighting have only been reviewed statically.
+- When storage is blocked, the selection remains available only until the page is reloaded.
+
+### Steps left
+
+- Add manual schedule override configuration and validation.
+- Add GitHub Actions for dependency installation, tests, type checking, linting, and production build.
+- Add static deployment configuration, browser verification, and final maintenance documentation.
+
+### Next recommended task
+
+Add typed manual schedule overrides keyed by Gregorian Saturday strings, apply them after generated rotation resolution and before live status or unit lookup, and validate day/slot indexes plus the final one-through-39 private-unit invariant. Cover empty configuration, a two-unit swap, a public or cleaning replacement, invalid indexes, duplicate units, and a week with no override. Keep CI and deployment for later runs.
