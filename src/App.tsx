@@ -22,6 +22,7 @@ import {
   getLatestSaturdayInTehran,
   getWeekOffsetFromAnchor,
 } from './domain/tehranTime'
+import { getDisplayedWeekSelection } from './domain/weekNavigation'
 
 function getSlotLabel(slot: ResolvedScheduleSlotDefinition): string {
   switch (slot.kind) {
@@ -56,10 +57,16 @@ function useCurrentTime(): Date {
 
 function App() {
   const now = useCurrentTime()
-  const weekStart = getLatestSaturdayInTehran(now)
-  const weekOffset = getWeekOffsetFromAnchor(now)
-  const schedule = resolveWeeklySchedule(weekOffset)
-  const status = getDisplayedWeekStatus(now, weekStart, schedule)
+  const [relativeWeekOffset, setRelativeWeekOffset] = useState(0)
+  const liveWeekStart = getLatestSaturdayInTehran(now)
+  const liveWeekOffset = getWeekOffsetFromAnchor(now)
+  const displayedWeek = getDisplayedWeekSelection(
+    liveWeekStart,
+    liveWeekOffset,
+    relativeWeekOffset,
+  )
+  const schedule = resolveWeeklySchedule(displayedWeek.weekOffsetFromAnchor)
+  const status = getDisplayedWeekStatus(now, displayedWeek.weekStart, schedule)
   const activeDetails = status.activeSlot
     ? getPositionDetails(status.activeSlot)
     : null
@@ -67,7 +74,7 @@ function App() {
     ? getPositionDetails(status.nextSlot)
     : null
   const days = schedule.days.map((day) => {
-    const date = addCalendarDays(weekStart, day.dayIndex)
+    const date = addCalendarDays(displayedWeek.weekStart, day.dayIndex)
 
     return {
       ...day,
@@ -87,56 +94,95 @@ function App() {
           </p>
         </div>
 
-        <div className="week-summary" aria-label="بازه هفته جاری">
-          <span className="week-summary__label">هفته جاری</span>
-          <strong>{formatJalaliWeekRange(weekStart)}</strong>
+        <div
+          className="week-summary"
+          aria-label={`بازه ${displayedWeek.labelFa}`}
+        >
+          <span className="week-summary__label">{displayedWeek.labelFa}</span>
+          <strong>{formatJalaliWeekRange(displayedWeek.weekStart)}</strong>
           <span className="week-summary__timezone">به وقت تهران</span>
         </div>
       </header>
 
-      <section
-        className="period-status"
-        aria-label="وضعیت نوبت‌های استخر"
-        aria-live="polite"
-      >
-        <article className="period-card period-card--current">
-          <span className="period-card__label">نوبت در حال اجرا</span>
-          <strong>
-            {activeDetails?.slotLabel ?? 'در حال حاضر نوبتی در جریان نیست'}
-          </strong>
-          {activeDetails ? (
-            <p className="period-card__meta">
-              {activeDetails.dayLabel}، {activeDetails.dateLabel}
-              <bdi className="period-card__time" dir="rtl">
-                {activeDetails.timeLabel}
-              </bdi>
-            </p>
-          ) : (
-            <p className="period-card__meta">
-              {nextDetails
-                ? 'در فاصله بین نوبت‌ها یا پیش از شروع برنامه روزانه هستید.'
-                : 'برنامه این هفته به پایان رسیده است.'}
-            </p>
-          )}
-        </article>
+      <nav className="week-navigation" aria-label="جابجایی بین هفته‌ها">
+        <button
+          type="button"
+          onClick={() => setRelativeWeekOffset((offset) => offset - 1)}
+        >
+          هفته قبل
+        </button>
+        <button
+          className="week-navigation__current"
+          type="button"
+          disabled={displayedWeek.isCurrentWeek}
+          onClick={() => setRelativeWeekOffset(0)}
+        >
+          هفته جاری
+        </button>
+        <button
+          type="button"
+          onClick={() => setRelativeWeekOffset((offset) => offset + 1)}
+        >
+          هفته بعد
+        </button>
+      </nav>
 
-        <article className="period-card period-card--next">
-          <span className="period-card__label">نوبت بعدی</span>
-          <strong>
-            {nextDetails?.slotLabel ?? 'نوبت دیگری در این هفته باقی نمانده است'}
-          </strong>
-          {nextDetails ? (
-            <p className="period-card__meta">
-              {nextDetails.dayLabel}، {nextDetails.dateLabel}
-              <bdi className="period-card__time" dir="rtl">
-                {nextDetails.timeLabel}
-              </bdi>
-            </p>
-          ) : (
-            <p className="period-card__meta">هفته بعد از روز شنبه آغاز می‌شود.</p>
-          )}
-        </article>
-      </section>
+      {displayedWeek.isCurrentWeek ? (
+        <section
+          className="period-status"
+          aria-label="وضعیت نوبت‌های استخر"
+          aria-live="polite"
+        >
+          <article className="period-card period-card--current">
+            <span className="period-card__label">نوبت در حال اجرا</span>
+            <strong>
+              {activeDetails?.slotLabel ?? 'در حال حاضر نوبتی در جریان نیست'}
+            </strong>
+            {activeDetails ? (
+              <p className="period-card__meta">
+                {activeDetails.dayLabel}، {activeDetails.dateLabel}
+                <bdi className="period-card__time" dir="rtl">
+                  {activeDetails.timeLabel}
+                </bdi>
+              </p>
+            ) : (
+              <p className="period-card__meta">
+                {nextDetails
+                  ? 'در فاصله بین نوبت‌ها یا پیش از شروع برنامه روزانه هستید.'
+                  : 'برنامه این هفته به پایان رسیده است.'}
+              </p>
+            )}
+          </article>
+
+          <article className="period-card period-card--next">
+            <span className="period-card__label">نوبت بعدی</span>
+            <strong>
+              {nextDetails?.slotLabel ??
+                'نوبت دیگری در این هفته باقی نمانده است'}
+            </strong>
+            {nextDetails ? (
+              <p className="period-card__meta">
+                {nextDetails.dayLabel}، {nextDetails.dateLabel}
+                <bdi className="period-card__time" dir="rtl">
+                  {nextDetails.timeLabel}
+                </bdi>
+              </p>
+            ) : (
+              <p className="period-card__meta">
+                هفته بعد از روز شنبه آغاز می‌شود.
+              </p>
+            )}
+          </article>
+        </section>
+      ) : (
+        <section className="browsing-week-note" aria-live="polite">
+          <strong>در حال مشاهده {displayedWeek.labelFa}</strong>
+          <p>
+            وضعیت زنده، امروز و نوبت بعدی فقط هنگام نمایش هفته جاری مشخص
+            می‌شوند.
+          </p>
+        </section>
+      )}
 
       <ul className="schedule-legend" aria-label="راهنمای برنامه">
         <li>
@@ -151,14 +197,18 @@ function App() {
           <span className="legend-mark legend-mark--cleaning" />
           نظافت
         </li>
-        <li>
-          <span className="legend-mark legend-mark--active" />
-          نوبت در حال اجرا
-        </li>
-        <li>
-          <span className="legend-mark legend-mark--next" />
-          نوبت بعدی
-        </li>
+        {displayedWeek.isCurrentWeek ? (
+          <>
+            <li>
+              <span className="legend-mark legend-mark--active" />
+              نوبت در حال اجرا
+            </li>
+            <li>
+              <span className="legend-mark legend-mark--next" />
+              نوبت بعدی
+            </li>
+          </>
+        ) : null}
       </ul>
 
       <section className="mobile-schedule" aria-label="برنامه روزهای هفته">
@@ -217,7 +267,9 @@ function App() {
       <section className="desktop-schedule" aria-label="جدول برنامه هفتگی">
         <div className="schedule-table-wrap">
           <table className="schedule-table">
-            <caption className="sr-only">برنامه کامل هفته جاری استخر</caption>
+            <caption className="sr-only">
+              برنامه کامل {displayedWeek.labelFa} استخر
+            </caption>
             <thead>
               <tr>
                 <th className="schedule-table__day-heading" scope="col">
@@ -236,7 +288,9 @@ function App() {
 
                 return (
                   <tr
-                    className={isToday ? 'schedule-table__row--today' : undefined}
+                    className={
+                      isToday ? 'schedule-table__row--today' : undefined
+                    }
                     key={day.key}
                   >
                     <th
