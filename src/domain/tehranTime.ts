@@ -15,6 +15,13 @@ export interface TehranDateParts extends CalendarDate {
   readonly weekdayIndex: number
 }
 
+export interface TehranTimeParts {
+  readonly hour: number
+  readonly minute: number
+  readonly second: number
+  readonly minutesSinceMidnight: number
+}
+
 export const ANCHOR_SATURDAY: CalendarDate = {
   year: 2026,
   month: 7,
@@ -31,20 +38,38 @@ const tehranDateFormatter = new Intl.DateTimeFormat(
   },
 )
 
-function readDatePart(
+const tehranTimeFormatter = new Intl.DateTimeFormat(
+  'en-GB-u-ca-gregory-nu-latn',
+  {
+    timeZone: TEHRAN_TIME_ZONE,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  },
+)
+
+function assertValidDate(date: Date): void {
+  if (Number.isNaN(date.getTime())) {
+    throw new Error('Cannot extract Tehran date or time from an invalid Date.')
+  }
+}
+
+function readIntegerPart(
   parts: readonly Intl.DateTimeFormatPart[],
-  type: 'year' | 'month' | 'day',
+  type: 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second',
+  context: string,
 ): number {
   const value = parts.find((part) => part.type === type)?.value
 
   if (!value) {
-    throw new Error(`Missing ${type} in Tehran date formatting result.`)
+    throw new Error(`Missing ${type} in ${context} formatting result.`)
   }
 
   const number = Number(value)
 
   if (!Number.isInteger(number)) {
-    throw new Error(`Invalid ${type} in Tehran date formatting result: ${value}`)
+    throw new Error(`Invalid ${type} in ${context} formatting result: ${value}`)
   }
 
   return number
@@ -95,15 +120,13 @@ export function addCalendarDays(
 }
 
 export function getTehranDateParts(date: Date): TehranDateParts {
-  if (Number.isNaN(date.getTime())) {
-    throw new Error('Cannot extract Tehran date parts from an invalid Date.')
-  }
+  assertValidDate(date)
 
   const parts = tehranDateFormatter.formatToParts(date)
   const calendarDate: CalendarDate = {
-    year: readDatePart(parts, 'year'),
-    month: readDatePart(parts, 'month'),
-    day: readDatePart(parts, 'day'),
+    year: readIntegerPart(parts, 'year', 'Tehran date'),
+    month: readIntegerPart(parts, 'month', 'Tehran date'),
+    day: readIntegerPart(parts, 'day', 'Tehran date'),
   }
   const javaScriptWeekday = new Date(
     calendarDateToUtcMilliseconds(calendarDate),
@@ -115,6 +138,28 @@ export function getTehranDateParts(date: Date): TehranDateParts {
     ...calendarDate,
     weekday,
     weekdayIndex,
+  }
+}
+
+export function getTehranTimeParts(date: Date): TehranTimeParts {
+  assertValidDate(date)
+
+  const parts = tehranTimeFormatter.formatToParts(date)
+  const hour = readIntegerPart(parts, 'hour', 'Tehran time')
+  const minute = readIntegerPart(parts, 'minute', 'Tehran time')
+  const second = readIntegerPart(parts, 'second', 'Tehran time')
+
+  if (hour < 0 || hour > 23 || minute < 0 || minute > 59 || second < 0 || second > 59) {
+    throw new Error(
+      `Invalid Tehran time values: ${hour}:${minute}:${second}`,
+    )
+  }
+
+  return {
+    hour,
+    minute,
+    second,
+    minutesSinceMidnight: hour * 60 + minute,
   }
 }
 
