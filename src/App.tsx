@@ -145,6 +145,7 @@ function App() {
       return
     }
 
+    setUnitLookupWeekOffset(0)
     setSelectedUnit(parsedUnit)
     saveSelectedUnit(parsedUnit)
   }
@@ -155,10 +156,6 @@ function App() {
         <div className="page-heading">
           <p className="eyebrow">برج ارغوان</p>
           <h1>برنامه هفتگی استخر</h1>
-          <p className="page-summary">
-            برنامه به‌صورت خودکار بر اساس ساعت تهران محاسبه می‌شود و هر هفته
-            از روز شنبه آغاز می‌شود.
-          </p>
         </div>
 
         <div
@@ -167,20 +164,12 @@ function App() {
         >
           <span className="week-summary__label">{displayedWeek.labelFa}</span>
           <strong>{formatJalaliWeekRange(displayedWeek.weekStart)}</strong>
-          <span className="week-summary__timezone">به وقت تهران</span>
         </div>
       </header>
 
       <section className="unit-lookup" aria-labelledby="unit-lookup-title">
         <div className="unit-lookup__intro">
-          <div>
-            <p className="unit-lookup__eyebrow">جستجوی نوبت شخصی</p>
-            <h2 id="unit-lookup-title">نوبت واحد من</h2>
-            <p>
-              شماره واحد را انتخاب کنید تا نوبت آن در هفته انتخاب‌شده مشخص
-              شود.
-            </p>
-          </div>
+          <h2 id="unit-lookup-title">نوبت واحد من</h2>
 
           <label className="unit-lookup__selector">
             <span>شماره واحد</span>
@@ -198,16 +187,6 @@ function App() {
               ))}
             </select>
           </label>
-
-          <button
-            className="unit-lookup__week-button"
-            type="button"
-            onClick={() =>
-              setUnitLookupWeekOffset((offset) => (offset === 0 ? 1 : 0))
-            }
-          >
-            {unitLookupWeekOffset === 0 ? 'هفته بعد' : 'هفته جاری'}
-          </button>
         </div>
 
         <div
@@ -216,9 +195,20 @@ function App() {
         >
           {selectedUnitDetails && selectedUnit !== null ? (
             <>
-              <span className="unit-lookup__result-label">
-                نوبت {unitLookupWeek.labelFa}
-              </span>
+              <div className="unit-lookup__result-header">
+                <span className="unit-lookup__result-label">
+                  نوبت {unitLookupWeek.labelFa}
+                </span>
+                <button
+                  className="unit-lookup__week-button"
+                  type="button"
+                  onClick={() =>
+                    setUnitLookupWeekOffset((offset) => (offset === 0 ? 1 : 0))
+                  }
+                >
+                  {unitLookupWeekOffset === 0 ? 'هفته بعد' : 'هفته جاری'}
+                </button>
+              </div>
               <strong>واحد {toPersianDigits(selectedUnit)}</strong>
               <p>
                 {selectedUnitDetails.dayLabel}، {selectedUnitDetails.dateLabel}
@@ -228,10 +218,7 @@ function App() {
               </bdi>
             </>
           ) : (
-            <p>
-              پس از انتخاب شماره واحد، روز و ساعت نوبت آن در این بخش نمایش داده
-              می‌شود.
-            </p>
+            <p>شماره واحد را انتخاب کنید تا روز و ساعت نوبت نمایش داده شود.</p>
           )}
         </div>
       </section>
@@ -283,15 +270,7 @@ function App() {
             )}
           </article>
         </section>
-      ) : (
-        <section className="browsing-week-note" aria-live="polite">
-          <strong>در حال مشاهده {displayedWeek.labelFa}</strong>
-          <p>
-            وضعیت زنده، امروز و نوبت بعدی فقط هنگام نمایش هفته جاری مشخص
-            می‌شوند.
-          </p>
-        </section>
-      )}
+      ) : null}
 
       <ul className="schedule-legend" aria-label="راهنمای برنامه">
         <li>
@@ -483,10 +462,6 @@ function App() {
           </table>
         </div>
       </section>
-
-      <p className="schedule-note">
-        این برنامه بر اساس الگوی چرخش هفتگی واحدها نمایش داده می‌شود.
-      </p>
     </main>
   )
 }
