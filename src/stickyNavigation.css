@@ -1,0 +1,21 @@
+.week-navigation {
+  position: sticky;
+  top: calc(env(safe-area-inset-top, 0px) + 8px);
+  z-index: 30;
+  padding: 10px;
+  border: 1px solid rgba(181, 212, 234, 0.9);
+  border-radius: 14px;
+  background: rgba(238, 247, 255, 0.94);
+  box-shadow: 0 10px 24px rgba(7, 59, 103, 0.12);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+@media (max-width: 520px) {
+  .week-navigation {
+    top: calc(env(safe-area-inset-top, 0px) + 6px);
+    gap: 7px;
+    padding: 8px;
+    border-radius: 12px;
+  }
+}
