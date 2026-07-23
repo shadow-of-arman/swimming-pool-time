@@ -16,13 +16,22 @@ import {
 import {
   PUBLIC_AUDIENCE_LABELS_FA,
   TIME_RANGES,
+  UNIT_COUNT,
 } from './domain/schedule'
 import {
   addCalendarDays,
   getLatestSaturdayInTehran,
   getWeekOffsetFromAnchor,
 } from './domain/tehranTime'
+import {
+  findUnitSchedulePosition,
+  isValidUnitNumber,
+  persistSelectedUnit,
+  readSelectedUnit,
+} from './domain/unitLookup'
 import { getDisplayedWeekSelection } from './domain/weekNavigation'
+
+const UNIT_OPTIONS = Array.from({ length: UNIT_COUNT }, (_, index) => index + 1)
 
 function getSlotLabel(slot: ResolvedScheduleSlotDefinition): string {
   switch (slot.kind) {
@@ -44,6 +53,30 @@ function getPositionDetails(position: ScheduleSlotPosition) {
   }
 }
 
+function getInitialSelectedUnit(): number | null {
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  try {
+    return readSelectedUnit(window.localStorage)
+  } catch {
+    return null
+  }
+}
+
+function saveSelectedUnit(unitNumber: number | null): void {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  try {
+    persistSelectedUnit(window.localStorage, unitNumber)
+  } catch {
+    // Storage availability must not prevent schedule use.
+  }
+}
+
 function useCurrentTime(): Date {
   const [now, setNow] = useState(() => new Date())
 
@@ -58,6 +91,9 @@ function useCurrentTime(): Date {
 function App() {
   const now = useCurrentTime()
   const [relativeWeekOffset, setRelativeWeekOffset] = useState(0)
+  const [selectedUnit, setSelectedUnit] = useState<number | null>(
+    getInitialSelectedUnit,
+  )
   const liveWeekStart = getLatestSaturdayInTehran(now)
   const liveWeekOffset = getWeekOffsetFromAnchor(now)
   const displayedWeek = getDisplayedWeekSelection(
@@ -73,6 +109,17 @@ function App() {
   const nextDetails = status.nextSlot
     ? getPositionDetails(status.nextSlot)
     : null
+  const selectedUnitPosition =
+    selectedUnit === null
+      ? null
+      : findUnitSchedulePosition(
+          displayedWeek.weekStart,
+          schedule,
+          selectedUnit,
+        )
+  const selectedUnitDetails = selectedUnitPosition
+    ? getPositionDetails(selectedUnitPosition)
+    : null
   const days = schedule.days.map((day) => {
     const date = addCalendarDays(displayedWeek.weekStart, day.dayIndex)
 
@@ -81,6 +128,17 @@ function App() {
       dateLabel: formatJalaliConcise(date),
     }
   })
+
+  const handleSelectedUnitChange = (value: string) => {
+    const parsedUnit = value === '' ? null : Number(value)
+
+    if (parsedUnit !== null && !isValidUnitNumber(parsedUnit)) {
+      return
+    }
+
+    setSelectedUnit(parsedUnit)
+    saveSelectedUnit(parsedUnit)
+  }
 
   return (
     <main className="app-shell">
@@ -126,6 +184,61 @@ function App() {
           هفته بعد
         </button>
       </nav>
+
+      <section className="unit-lookup" aria-labelledby="unit-lookup-title">
+        <div className="unit-lookup__intro">
+          <div>
+            <p className="unit-lookup__eyebrow">جستجوی نوبت شخصی</p>
+            <h2 id="unit-lookup-title">نوبت واحد من</h2>
+            <p>
+              شماره واحد را انتخاب کنید تا نوبت آن در هفته نمایش‌داده‌شده مشخص
+              شود.
+            </p>
+          </div>
+
+          <label className="unit-lookup__selector">
+            <span>شماره واحد</span>
+            <select
+              value={selectedUnit ?? ''}
+              onChange={(event) =>
+                handleSelectedUnitChange(event.currentTarget.value)
+              }
+            >
+              <option value="">انتخاب واحد</option>
+              {UNIT_OPTIONS.map((unitNumber) => (
+                <option value={unitNumber} key={unitNumber}>
+                  واحد {toPersianDigits(unitNumber)}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <div
+          className={`unit-lookup__result${selectedUnitDetails ? '' : ' unit-lookup__result--empty'}`}
+          aria-live="polite"
+        >
+          {selectedUnitDetails && selectedUnit !== null ? (
+            <>
+              <span className="unit-lookup__result-label">
+                نوبت {displayedWeek.labelFa}
+              </span>
+              <strong>واحد {toPersianDigits(selectedUnit)}</strong>
+              <p>
+                {selectedUnitDetails.dayLabel}، {selectedUnitDetails.dateLabel}
+              </p>
+              <bdi className="unit-lookup__time" dir="rtl">
+                {selectedUnitDetails.timeLabel}
+              </bdi>
+            </>
+          ) : (
+            <p>
+              پس از انتخاب شماره واحد، روز و ساعت نوبت آن در این بخش نمایش داده
+              می‌شود.
+            </p>
+          )}
+        </div>
+      </section>
 
       {displayedWeek.isCurrentWeek ? (
         <section
@@ -197,6 +310,12 @@ function App() {
           <span className="legend-mark legend-mark--cleaning" />
           نظافت
         </li>
+        {selectedUnit !== null ? (
+          <li>
+            <span className="legend-mark legend-mark--selected-unit" />
+            واحد انتخاب‌شده
+          </li>
+        ) : null}
         {displayedWeek.isCurrentWeek ? (
           <>
             <li>
@@ -242,10 +361,14 @@ function App() {
                     day.dayIndex,
                     slotIndex,
                   )
+                  const isSelectedUnit =
+                    selectedUnit !== null &&
+                    slot.kind === 'private' &&
+                    slot.unitNumber === selectedUnit
 
                   return (
                     <div
-                      className={`slot-row${isActive ? ' slot-row--active' : ''}${isNext ? ' slot-row--next' : ''}`}
+                      className={`slot-row${isActive ? ' slot-row--active' : ''}${isNext ? ' slot-row--next' : ''}${isSelectedUnit ? ' slot-row--selected-unit' : ''}`}
                       key={timeRange.id}
                       aria-current={isActive ? 'time' : undefined}
                     >
@@ -319,10 +442,14 @@ function App() {
                         day.dayIndex,
                         slotIndex,
                       )
+                      const isSelectedUnit =
+                        selectedUnit !== null &&
+                        slot.kind === 'private' &&
+                        slot.unitNumber === selectedUnit
 
                       return (
                         <td
-                          className={`schedule-cell schedule-cell--${slot.kind}${isActive ? ' schedule-cell--active' : ''}${isNext ? ' schedule-cell--next' : ''}`}
+                          className={`schedule-cell schedule-cell--${slot.kind}${isActive ? ' schedule-cell--active' : ''}${isNext ? ' schedule-cell--next' : ''}${isSelectedUnit ? ' schedule-cell--selected-unit' : ''}`}
                           key={`${day.key}-${TIME_RANGES[slotIndex].id}`}
                           aria-current={isActive ? 'time' : undefined}
                         >
