@@ -2,7 +2,7 @@
 
 ## Current state
 
-The project foundation, Tehran-aware schedule engine, 39-unit rotation, Persian formatting, responsive schedule interface, live period status, week navigation, and persisted unit lookup are present on `main`. Every displayed week is generated directly from the anchor rotation. The previously added manual-override layer was removed after the product requirement was clarified.
+The project foundation, Tehran-aware schedule engine, 39-unit rotation, Persian formatting, responsive schedule interface, live period status, week navigation, persisted unit lookup, and repository CI workflow are present on `main`. Every displayed week is generated directly from the anchor rotation. Manual schedule overrides remain explicitly out of scope.
 
 ## Confirmed decisions
 
@@ -17,6 +17,7 @@ The project foundation, Tehran-aware schedule engine, 39-unit rotation, Persian 
 - Manual schedule overrides are explicitly out of scope.
 - A selected unit is stored as a canonical integer string under `swimming-pool:selected-unit`; storage failure is non-fatal.
 - Browsed weeks use an integer offset relative to the live Tehran week.
+- CI currently uses `npm install` because the repository does not yet contain a lockfile.
 
 ## Current architecture
 
@@ -32,6 +33,7 @@ The project foundation, Tehran-aware schedule engine, 39-unit rotation, Persian 
 - `src/domain/weekNavigation.ts`: displayed-week calculations and Persian relative labels.
 - `src/domain/unitLookup.ts`: local-storage helpers and selected-unit schedule lookup.
 - Matching `*.test.ts` files cover the domain modules, including both screenshot weeks.
+- `.github/workflows/ci.yml`: push and pull-request verification using Node.js 22.16.0, dependency installation, linting, type checking, Vitest, and the Vite production build.
 - `package.json`, `tsconfig*.json`, `eslint.config.js`, and `vite.config.ts`: project tooling.
 
 ## Interface behavior
@@ -42,26 +44,36 @@ The project foundation, Tehran-aware schedule engine, 39-unit rotation, Persian 
 - Users can select a unit from 1 through 39, persist it locally, view its date/time summary, and see it highlighted in either responsive layout.
 - Every displayed schedule comes directly from the same fixed rotation formula; no exception or override configuration is applied.
 
+## CI behavior
+
+- The workflow runs on pushes to `main` and on pull requests.
+- It checks out the repository and uses Node.js `22.16.0`.
+- It runs `npm install --no-audit --no-fund` because no lockfile exists yet.
+- It then runs `npm run lint`, `npm run typecheck`, `npm run test:run`, and `npm run build` as separate steps.
+- Concurrency cancels an older in-progress run for the same ref when a newer commit is pushed.
+- Workflow permissions are limited to read-only repository contents.
+
 ## Documentation protocol
 
 Each implementation run must read `README.md`, `docs/IMPLEMENTATION_PLAN.md`, `docs/HANDOFF.md`, and the complete `docs/RUN_LOG.md`. After implementation, update README status, append to the run log without removing history, and replace this handoff with the latest state.
 
 ## Verification performed
 
-- `src/domain/resolvedSchedule.ts` was restored to the previously verified direct rotation implementation.
-- The manual override configuration, domain module, and tests were removed.
-- The remaining schedule consumers continue to call `resolveWeeklySchedule`, so live status, navigation, and unit lookup all use the authoritative generated schedule.
-- Existing tests cover both supplied screenshot sequences, unit uniqueness, Tehran rollover, Persian date boundaries, week navigation, current/next status, and unit lookup.
-- Full dependency installation, actual Vitest execution, linting, TypeScript project checking, Vite production build, and browser rendering remain pending because the connector does not provide a repository shell or preview.
+- The committed workflow was fetched from `main` and reviewed against the scripts defined in `package.json`.
+- A local YAML parse confirmed the workflow has the expected checkout, Node setup, install, lint, type-check, test, and build steps.
+- The workflow uses a Node version compatible with the existing Vite toolchain.
+- The GitHub connector available in this run could not list push-triggered workflow runs, so the first Actions result has not been confirmed here.
+- A lockfile could not be generated because the available local environment could not reach the npm registry and the GitHub connector does not provide a repository shell.
 
 ## Known uncertainties and issues
 
 - The rotation rule is inferred from two screenshots and is assumed to continue indefinitely, as requested.
-- No lockfile exists yet.
-- Full automated checks and browser verification have not yet run.
+- No lockfile exists yet, so CI uses `npm install` rather than `npm ci`.
+- The first GitHub Actions result still needs confirmation in the Actions interface or through a later connector capability.
+- Browser rendering has not yet been inspected through a deployed preview.
 - Week navigation remains intentionally unbounded.
 - When local storage is blocked, unit selection cannot persist across page reloads.
 
 ## Exact next recommended task
 
-Add a GitHub Actions workflow that installs dependencies and runs `npm run lint`, `npm run typecheck`, `npm run test:run`, and `npm run build` on pushes and pull requests. Resolve any failures found by CI and generate a lockfile through a verified install if feasible. Keep deployment configuration for the following run.
+Add static deployment configuration as a focused delivery task. Prefer GitHub Pages only when it is available for this private repository; otherwise add a host-neutral production-build artifact workflow and document the remaining hosting setup. Keep the application static, do not add secrets, a backend, an admin dashboard, or manual schedule overrides. Also inspect the first CI result if it becomes accessible and fix any reported failure before marking automated verification complete.
