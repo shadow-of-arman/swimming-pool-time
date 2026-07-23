@@ -490,3 +490,49 @@ Add typed manual schedule overrides keyed by Gregorian Saturday strings, apply t
 ### Next recommended task
 
 Add static deployment configuration without adding external secrets or server infrastructure. Prefer GitHub Pages only when it is supported for this private repository; otherwise produce a host-neutral build artifact and document the remaining hosting setup. Inspect the first CI result if it becomes accessible before marking automated verification complete.
+
+## 2026-07-23 - Run 11: Portable static-build delivery
+
+### Steps taken
+
+- Read the current README, implementation plan, handoff, and complete run log before making changes.
+- Inspected the latest commits and confirmed static delivery as the next coherent unfinished task.
+- Updated `vite.config.ts` with `base: './'` so production assets use portable relative URLs at either a root domain or nested hosting path.
+- Added `.github/workflows/static-site.yml` for pushes to `main` and manual dispatch.
+- Configured the workflow to install dependencies, run the existing production build, require the `dist/` directory, and upload it as `swimming-pool-time-static` for 14 days.
+- Kept workflow permissions read-only and added a ten-minute timeout plus per-ref concurrency cancellation.
+- Documented how the host-neutral artifact can be extracted into any static host without adding secrets or provider-specific infrastructure.
+- Updated the README and handoff documentation.
+
+### Verification
+
+- Fetched and reviewed the committed Vite configuration and static-artifact workflow from `main`.
+- Compiled the exact Vite configuration successfully with TypeScript 5.8.3 under strict settings against compatible Vite declarations.
+- Confirmed the workflow's build command matches `package.json`, the upload path is `dist/`, missing output fails the job, and the artifact retention period is 14 days.
+- Confirmed no application domain or interface code was changed and the fixed rotation remains authoritative.
+- Could not confirm the push-triggered workflow result because the available connector does not expose those Actions runs.
+- Could not generate a lockfile because the available environment does not provide repository shell access with npm registry connectivity.
+
+### Decisions
+
+- Use a host-neutral artifact rather than assume GitHub Pages is enabled for the private repository.
+- Use relative production asset URLs so a single artifact remains portable across hosting locations.
+- Keep artifact production separate from the verification workflow so the delivery output has a clear name and retention policy.
+- Avoid deployment secrets and provider-specific configuration until the actual static host is confirmed.
+
+### Issues
+
+- The verification and static-artifact workflow results still need confirmation in GitHub Actions.
+- A hosted browser preview is not available yet, so final mobile and desktop visual verification remains pending.
+- The repository still has no lockfile, so workflows use `npm install` rather than `npm ci`.
+
+### Steps left
+
+- Inspect both GitHub Actions workflow results and fix any reported failure.
+- Download or deploy the generated static artifact to the confirmed host.
+- Inspect the Persian RTL interface at representative mobile and desktop widths.
+- Finish hosting and maintenance instructions and perform the final MVP review.
+
+### Next recommended task
+
+Perform final delivery verification. Inspect the latest verification and static-artifact workflow results, resolve any failures, and publish or download the generated artifact through the confirmed static host. Verify the Persian RTL interface at mobile and desktop widths, document the hosting and maintenance procedure, and mark the MVP complete only after those checks pass. Do not add a backend, admin dashboard, secrets, or manual schedule overrides.
