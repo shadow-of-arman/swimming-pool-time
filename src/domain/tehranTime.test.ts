@@ -5,6 +5,7 @@ import {
   calendarDateToUtcMilliseconds,
   getLatestSaturdayInTehran,
   getTehranDateParts,
+  getTehranTimeParts,
   getWeekOffsetFromAnchor,
 } from './tehranTime'
 
@@ -30,6 +31,15 @@ describe('Tehran calendar-date primitives', () => {
       day: 18,
       weekday: 'saturday',
       weekdayIndex: 0,
+    })
+  })
+
+  it('extracts Tehran time and minutes since midnight', () => {
+    expect(getTehranTimeParts(new Date('2026-07-18T04:30:45.000Z'))).toEqual({
+      hour: 8,
+      minute: 0,
+      second: 45,
+      minutesSinceMidnight: 8 * 60,
     })
   })
 
