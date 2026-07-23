@@ -20,6 +20,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background: #eef6f4;
 }
 
 button,
@@ -41,7 +42,7 @@ select {
   align-items: flex-end;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
   padding: clamp(24px, 4vw, 40px);
   border: 1px solid rgba(23, 63, 58, 0.12);
   border-radius: 24px;
@@ -103,6 +104,61 @@ h1 {
   font-size: 1.05rem;
 }
 
+.period-status {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.period-card {
+  min-height: 150px;
+  padding: 22px 24px;
+  border: 1px solid #d8e6e3;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(23, 63, 58, 0.05);
+}
+
+.period-card--current {
+  border-color: #bddbd5;
+  background: #f5fbf9;
+}
+
+.period-card--next {
+  border-color: #d2d9ea;
+  background: #f7f9fd;
+}
+
+.period-card__label {
+  display: block;
+  margin-bottom: 10px;
+  color: #607975;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.period-card strong {
+  display: block;
+  color: #173f3a;
+  font-size: clamp(1.05rem, 2vw, 1.28rem);
+  line-height: 1.7;
+}
+
+.period-card__meta {
+  margin: 10px 0 0;
+  color: #607975;
+  font-size: 0.88rem;
+  line-height: 1.8;
+}
+
+.period-card__time {
+  display: block;
+  margin-top: 4px;
+  color: #355e58;
+  font-weight: 700;
+}
+
 .schedule-legend {
   display: flex;
   flex-wrap: wrap;
@@ -136,6 +192,16 @@ h1 {
 
 .legend-mark--cleaning {
   background: #f2dfb7;
+}
+
+.legend-mark--active {
+  border: 2px solid #2f756a;
+  background: #e5f5f0;
+}
+
+.legend-mark--next {
+  border: 2px solid #746ea8;
+  background: #f0eefb;
 }
 
 .mobile-schedule {
@@ -178,7 +244,7 @@ h1 {
 }
 
 .schedule-table__day-heading {
-  width: 145px;
+  width: 155px;
 }
 
 .schedule-table__day {
@@ -186,16 +252,41 @@ h1 {
   text-align: right !important;
 }
 
-.schedule-table__day strong,
-.schedule-table__day span {
+.schedule-table__day-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.schedule-table__day-name strong {
   display: block;
 }
 
-.schedule-table__day span {
-  margin-top: 4px;
+.schedule-table__date {
+  display: block;
+  margin-top: 5px;
   color: #6c817d;
   font-size: 0.78rem;
   font-weight: 400;
+}
+
+.table-today-badge,
+.today-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #d8eee9;
+  color: #245f57;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.schedule-table__row--today .schedule-table__day {
+  background: #e8f4f1;
 }
 
 .schedule-cell {
@@ -218,12 +309,29 @@ h1 {
   color: #7a5b18;
 }
 
+.schedule-cell--active {
+  position: relative;
+  z-index: 1;
+  box-shadow: inset 0 0 0 3px #2f756a;
+}
+
+.schedule-cell--next {
+  position: relative;
+  z-index: 1;
+  box-shadow: inset 0 0 0 2px #746ea8;
+}
+
 .day-card {
   overflow: hidden;
   border: 1px solid #dce9e6;
   border-radius: 18px;
   background: #fff;
   box-shadow: 0 10px 24px rgba(23, 63, 58, 0.06);
+}
+
+.day-card--today {
+  border-color: #6e9b94;
+  box-shadow: 0 12px 28px rgba(36, 95, 87, 0.13);
 }
 
 .day-card__header {
@@ -236,6 +344,16 @@ h1 {
   color: #fff;
 }
 
+.day-card--today .day-card__header {
+  background: #245f57;
+}
+
+.day-card__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .day-card__header h2 {
   margin-bottom: 0;
   font-size: 1.15rem;
@@ -245,6 +363,10 @@ h1 {
   margin-bottom: 0;
   color: #d8e9e5;
   font-size: 0.82rem;
+}
+
+.day-card__header .today-badge {
+  background: #e8f5f2;
 }
 
 .day-card__slots {
@@ -263,6 +385,16 @@ h1 {
 
 .slot-row:last-child {
   border-bottom: 0;
+}
+
+.slot-row--active {
+  background: #e7f5f1;
+  box-shadow: inset -4px 0 0 #2f756a;
+}
+
+.slot-row--next {
+  background: #f3f1fb;
+  box-shadow: inset -4px 0 0 #746ea8;
 }
 
 .slot-time {
@@ -337,6 +469,14 @@ h1 {
     min-width: 0;
   }
 
+  .period-status {
+    grid-template-columns: 1fr;
+  }
+
+  .period-card {
+    min-height: 0;
+  }
+
   .desktop-schedule {
     display: none;
   }
@@ -344,5 +484,18 @@ h1 {
   .mobile-schedule {
     display: grid;
     gap: 14px;
+  }
+}
+
+@media (max-width: 520px) {
+  .period-card {
+    padding: 18px 20px;
+    border-radius: 17px;
+  }
+
+  .day-card__header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
   }
 }
