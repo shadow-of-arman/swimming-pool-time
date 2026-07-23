@@ -16,7 +16,7 @@ A small Persian-first website for showing the apartment swimming-pool schedule. 
 
 ## Current status
 
-**Phase:** Previous/current/next week navigation complete; unit lookup is next.
+**Phase:** Unit lookup and local persistence complete; manual schedule overrides are next.
 
 ### Completed
 
@@ -55,10 +55,13 @@ A small Persian-first website for showing the apartment swimming-pool schedule. 
 - [x] Added previous, current, and next week navigation.
 - [x] Kept live today/current/next states limited to the actual Tehran week.
 - [x] Added tested Persian labels and rotation calculations for browsed weeks.
+- [x] Added a unit selector for units 1 through 39.
+- [x] Persisted valid unit selections in local storage with safe malformed-value recovery.
+- [x] Added displayed-week unit lookup summaries and selected-unit highlighting on mobile and desktop.
+- [x] Added tests for unit validation, persistence failures, and schedule-position lookup.
 
 ### Remaining
 
-- [ ] Add unit lookup with local persistence.
 - [ ] Add manual override configuration.
 - [ ] Add GitHub Actions for build and tests.
 - [ ] Add deployment configuration and final documentation.
