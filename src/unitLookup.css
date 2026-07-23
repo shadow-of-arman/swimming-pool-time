@@ -64,6 +64,33 @@
   border-color: #b45a3c;
 }
 
+.unit-lookup__week-button {
+  width: fit-content;
+  min-height: 42px;
+  padding: 9px 16px;
+  border: 1px solid #bfcfcb;
+  border-radius: 11px;
+  background: #f2f9f7;
+  color: #245f57;
+  cursor: pointer;
+  font-weight: 700;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.unit-lookup__week-button:hover {
+  border-color: #7fa9a2;
+  background: #e8f4f1;
+  transform: translateY(-1px);
+}
+
+.unit-lookup__week-button:focus-visible {
+  outline: 3px solid rgba(47, 117, 106, 0.28);
+  outline-offset: 2px;
+}
+
 .unit-lookup__result {
   display: flex;
   flex-direction: column;
@@ -140,6 +167,10 @@
   .unit-lookup {
     padding: 18px;
     border-radius: 17px;
+  }
+
+  .unit-lookup__week-button {
+    width: 100%;
   }
 
   .unit-lookup__result {
