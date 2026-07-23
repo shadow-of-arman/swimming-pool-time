@@ -1,0 +1,149 @@
+.unit-lookup {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.9fr) minmax(280px, 1.1fr);
+  gap: 18px;
+  margin-bottom: 20px;
+  padding: 22px;
+  border: 1px solid #d9e6e3;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(23, 63, 58, 0.05);
+}
+
+.unit-lookup__intro {
+  display: grid;
+  gap: 18px;
+}
+
+.unit-lookup__eyebrow {
+  margin-bottom: 5px;
+  color: #7e5b4b;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.unit-lookup h2 {
+  margin-bottom: 7px;
+  color: #173f3a;
+  font-size: 1.25rem;
+}
+
+.unit-lookup__intro p:not(.unit-lookup__eyebrow) {
+  margin-bottom: 0;
+  color: #607975;
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+.unit-lookup__selector {
+  display: grid;
+  gap: 7px;
+  max-width: 320px;
+}
+
+.unit-lookup__selector span {
+  color: #496661;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.unit-lookup__selector select {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 1px solid #bfcfcb;
+  border-radius: 11px;
+  background: #fff;
+  color: #173f3a;
+  cursor: pointer;
+}
+
+.unit-lookup__selector select:focus-visible {
+  outline: 3px solid rgba(180, 90, 60, 0.24);
+  outline-offset: 2px;
+  border-color: #b45a3c;
+}
+
+.unit-lookup__result {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 150px;
+  padding: 22px 24px;
+  border: 1px solid #e5c9be;
+  border-radius: 17px;
+  background: #fff8f4;
+  color: #643b2d;
+}
+
+.unit-lookup__result--empty {
+  border-color: #dce7e4;
+  background: #f7faf9;
+  color: #667d79;
+}
+
+.unit-lookup__result-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #8a6557;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.unit-lookup__result strong {
+  display: block;
+  color: #713f2d;
+  font-size: 1.25rem;
+}
+
+.unit-lookup__result p {
+  margin: 8px 0 0;
+  line-height: 1.8;
+}
+
+.unit-lookup__time {
+  display: inline-block;
+  width: fit-content;
+  margin-top: 7px;
+  color: #713f2d;
+  font-weight: 700;
+}
+
+.legend-mark--selected-unit {
+  border: 2px solid #b45a3c;
+  background: #fff0e9;
+}
+
+.slot-row--selected-unit {
+  outline: 2px solid #b45a3c;
+  outline-offset: -3px;
+}
+
+.schedule-cell--selected-unit {
+  position: relative;
+  z-index: 2;
+  outline: 3px solid #b45a3c;
+  outline-offset: -4px;
+}
+
+@media (max-width: 900px) {
+  .unit-lookup {
+    grid-template-columns: 1fr;
+  }
+
+  .unit-lookup__selector {
+    max-width: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .unit-lookup {
+    padding: 18px;
+    border-radius: 17px;
+  }
+
+  .unit-lookup__result {
+    min-height: 0;
+    padding: 18px;
+  }
+}
