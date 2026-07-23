@@ -2,61 +2,51 @@
 
 ## Current state
 
-The Persian-first swimming-pool schedule for برج ارغوان is live on GitHub Pages at `https://shadow-of-arman.github.io/swimming-pool-time/`. The Tehran-aware fixed rotation, responsive mobile and desktop schedules, live period status, week navigation, persisted unit lookup, verified npm lockfile, repository checks, portable static artifact, Pages deployment, and delivery-maintenance guide are present on `main`. Manual schedule overrides remain explicitly out of scope.
+The Persian-first swimming-pool schedule for برج ارغوان is live on GitHub Pages at `https://shadow-of-arman.github.io/swimming-pool-time/`. The fixed Tehran rotation, responsive schedules, live period status, persisted unit selection, independent calendar and unit-lookup week controls, verified lockfile, CI, portable artifact, Pages deployment, web-app manifest, and supplied pool icon pipeline are present on `main`. Manual schedule overrides remain explicitly out of scope.
 
 ## Confirmed decisions
 
 - The public building identity is برج ارغوان; the main heading remains برنامه هفتگی استخر.
-- The website is Persian-first and fully RTL.
-- Weeks begin on Saturday and use `Asia/Tehran` rather than the visitor's timezone.
-- The MVP remains a static React, TypeScript, and Vite application with no backend.
-- The visual design remains simple, readable, responsive, and modest.
-- Calendar arithmetic uses Gregorian date-only values represented at UTC midnight.
-- Jalali conversion uses the built-in `Intl.DateTimeFormat` Persian calendar.
-- Resolved schedules are generated solely from the fixed anchor rotation.
-- Manual schedule overrides are explicitly out of scope.
+- The website is Persian-first, fully RTL, static, and calculated in `Asia/Tehran`.
+- Calendar browsing and unit-lookup browsing use separate relative week offsets.
+- Calendar controls continue to support previous, current, and next weeks.
+- Unit lookup defaults to the current week and switches only between the current and next week.
 - A selected unit is stored under `swimming-pool:selected-unit`; storage failure is non-fatal.
-- Browsed weeks use an integer offset relative to the live Tehran week.
-- Week navigation is placed immediately above the mobile cards or desktop schedule table.
-- A verified `package-lock.json` is committed and automated workflows use `npm ci`.
-- Static production assets use relative URLs and the production site is deployed with GitHub Pages.
+- The supplied pool artwork is used for the browser favicon, Apple Home Screen icon, and installed web-app icon.
+- The icon source is stored as verified Base64 parts and assembled into a PNG before development and production builds.
+- The fixed 39-unit rotation is authoritative; there is no backend, admin dashboard, authentication, or manual override layer.
 
 ## Current architecture
 
-- `index.html`: Persian metadata, RTL direction, Arghavan Tower title and description, theme metadata, and font loading.
-- `src/main.tsx`: guarded React root and global/navigation/unit-lookup style imports.
-- `src/App.tsx`: Arghavan Tower header, live clock, selected-unit persistence, status summaries, schedule legend, calendar-adjacent week navigation, and responsive schedule rendering.
-- `src/index.css`, `src/navigation.css`, `src/unitLookup.css`: modest responsive RTL presentation and state highlighting.
-- `src/domain/schedule.ts`: fixed weekdays, time ranges, public/private/cleaning structure, and invariants.
-- `src/domain/tehranTime.ts`: Tehran date/time extraction and UTC-safe date arithmetic.
-- `src/domain/resolvedSchedule.ts`: authoritative anchor-based unit rotation and resolved weekly schedules.
-- `src/domain/persianFormatting.ts`: Persian digits and Jalali labels.
-- `src/domain/scheduleStatus.ts`: current day, active period, and next period.
-- `src/domain/weekNavigation.ts`: displayed-week calculations and Persian relative labels.
-- `src/domain/unitLookup.ts`: local-storage helpers and selected-unit schedule lookup.
-- Matching `*.test.ts` files cover the domain modules, including both screenshot weeks.
-- `vite.config.ts`: React plugin and portable `./` production base path.
+- `index.html`: Persian RTL metadata, Arghavan Tower title, favicon, Apple web-app metadata, and manifest link.
+- `assets/pool-icon-512.part1` through `part4`: verified text-safe source data for the supplied pool icon.
+- `scripts/generate-pwa-icons.mjs`: assembles the source parts into `public/pool-icon-512.png`.
+- `public/site.webmanifest`: standalone Persian web-app metadata scoped with relative URLs for GitHub Pages.
+- `src/App.tsx`: separate calendar and unit-lookup week state, Tehran live status, persisted unit selection, and responsive schedule rendering.
+- `src/unitLookup.css`: unit lookup and independent week-button styling.
+- `src/domain/*`: fixed schedule, Tehran time, rotation, Persian formatting, live status, week selection, and unit lookup helpers.
+- `package.json`: runs icon generation before development and production builds.
 - `package-lock.json`: verified dependency lockfile.
-- `.github/workflows/ci.yml`: lint, type-check, Vitest, and production-build verification.
-- `.github/workflows/static-site.yml`: portable `dist/` artifact generation.
-- `.github/workflows/pages.yml`: GitHub Pages build and deployment.
-- `docs/DELIVERY.md`: production URL, release checks, schedule maintenance, dependency updates, rollback, and final sign-off.
+- `.github/workflows/ci.yml`: lint, type-check, tests, and production build.
+- `.github/workflows/static-site.yml`: portable static artifact.
+- `.github/workflows/pages.yml`: standard GitHub Pages deployment with read-only content access.
+- `docs/DELIVERY.md`: release, responsive verification, installation, maintenance, and rollback guidance.
 
 ## Interface behavior
 
-- The header identifies the building as برج ارغوان.
-- The current Tehran week is calculated automatically and updates while the page remains open.
-- Users can browse previous and later weeks; the three controls sit directly above the schedule.
-- Today, active-period, and next-period states appear only for the live week.
-- Users can select a unit, persist it locally, view its date/time summary, and see it highlighted in either responsive layout.
-- Every displayed schedule comes directly from the same fixed rotation formula.
+- The calendar week controls affect only the main schedule, week summary, and live calendar status.
+- The unit lookup starts on the current Tehran week regardless of the calendar's browsed week.
+- In the unit section, `هفته بعد` changes only the unit result to next week; while next week is displayed, the button becomes `هفته جاری`.
+- Selecting a unit still highlights that unit in the currently displayed calendar schedule.
+- Today, active-period, and next-period states remain tied to the displayed calendar week and appear only for the live week.
+- Add to Home Screen uses the Persian app identity `استخر ارغوان`, standalone display mode, and the supplied pool icon.
 
 ## Automated workflow behavior
 
 - `Repository checks` runs on pushes to `main` and pull requests and executes linting, type checking, Vitest, and the production build.
 - `Static site artifact` builds and uploads the portable `dist/` directory.
-- `Deploy GitHub Pages` publishes the production build to the live GitHub Pages URL.
-- All workflows install dependencies using the verified lockfile with `npm ci`.
+- `Deploy GitHub Pages` publishes the production build to the live URL.
+- `npm run build` automatically generates the pool PNG before TypeScript and Vite run.
 
 ## Documentation protocol
 
@@ -64,23 +54,23 @@ Each implementation run must read `README.md` and every file under `docs/`. Afte
 
 ## Verification performed
 
-- Read the current README and every file under `docs/` before implementation.
-- Inspected the latest commits, verified lockfile, CI workflow, static-artifact workflow, and Pages deployment workflow.
-- The repository owner confirmed the production URL was live before this customization.
-- Fetched the committed `src/App.tsx` after modification and confirmed برج ارغوان appears in the header and the existing week-navigation block now sits after the schedule legend and immediately before the schedule views.
-- Confirmed the existing navigation handlers, disabled current-week state, schedule engine, unit rotation, live status, and unit lookup logic were preserved.
-- Confirmed `index.html` now uses Arghavan Tower metadata and the static artifact workflow uses `npm ci`.
-- The latest pushes trigger repository checks, artifact generation, and Pages deployment; their results and the redeployed browser layout still require confirmation.
-- The available connector cannot independently render the GitHub Pages site or expose push-triggered workflow logs.
+- Read the current README and every file under `docs/` before implementation and inspected the latest repository state.
+- Verified each of the four committed icon source parts against its expected Git blob SHA before using them in the generator.
+- Confirmed their concatenated source decodes locally into a valid optimized 512-by-512 PNG based on the supplied image.
+- Restored the standard Pages workflow after removing the unsuccessful temporary bootstrap workflow.
+- Fetched the updated application structure and confirmed the calendar and unit lookup now resolve schedules from separate state variables.
+- Confirmed the manifest and icon links use relative paths suitable for `/swimming-pool-time/` on GitHub Pages.
+- Actual push-triggered workflow results and live browser behavior still require confirmation after deployment because the available connector does not expose those runs or render the site.
 
 ## Known uncertainties and issues
 
-- The rotation rule is inferred from two screenshots and is assumed to continue indefinitely, as requested.
-- The latest workflows must be confirmed after the branding and navigation-layout commits.
-- The redeployed page should be checked around 390-pixel and 1440-pixel widths.
-- Week navigation remains intentionally unbounded.
+- The rotation rule remains inferred from the two supplied screenshots and is assumed to continue indefinitely.
+- The latest workflows and Pages deployment must be checked after this update.
+- Browser icon caches may require a hard refresh; an existing Home Screen shortcut may need to be removed and added again.
+- The live layout and independent controls still need final mobile and desktop inspection.
+- Week navigation remains intentionally unbounded for the main calendar.
 - When local storage is blocked, unit selection cannot persist across page reloads.
 
 ## Exact next recommended task
 
-After GitHub Pages redeploys, confirm `Repository checks`, `Static site artifact`, and `Deploy GitHub Pages` are green. Open the live site at representative mobile and desktop widths and verify the برج ارغوان header, the week-navigation controls immediately above the schedule, Persian RTL layout, Tehran week behavior, and unit lookup. Record the result and mark the MVP complete if all checks pass. Do not add a backend, admin dashboard, secrets, or manual schedule overrides.
+Confirm `Repository checks`, `Static site artifact`, and `Deploy GitHub Pages` are green for the latest commit. On the live site, verify the favicon, remove and re-add the site to the phone Home Screen to confirm the pool icon and standalone launch, verify calendar navigation does not change the unit result, and verify the unit section switches independently between `هفته جاری` and `هفته بعد`. Repeat the layout checks around 390 and 1440 pixels, then mark the MVP complete if all checks pass.
