@@ -109,6 +109,15 @@
   color: #667d79;
 }
 
+.unit-lookup__result-header {
+  display: contents;
+}
+
+.unit-lookup__result .unit-lookup__week-button {
+  order: 1;
+  margin-top: 16px;
+}
+
 .unit-lookup__result-label {
   display: block;
   margin-bottom: 8px;
