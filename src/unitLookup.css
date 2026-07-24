@@ -92,11 +92,12 @@
 }
 
 .unit-lookup__result {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-height: 150px;
-  padding: 22px 24px;
+  padding: 22px 24px 80px;
   border: 1px solid #e5c9be;
   border-radius: 17px;
   background: #fff8f4;
@@ -104,18 +105,21 @@
 }
 
 .unit-lookup__result--empty {
+  padding-bottom: 22px;
   border-color: #dce7e4;
   background: #f7faf9;
   color: #667d79;
 }
 
 .unit-lookup__result-header {
-  display: contents;
+  display: block;
 }
 
 .unit-lookup__result .unit-lookup__week-button {
-  order: 1;
-  margin-top: 16px;
+  position: absolute;
+  inset-inline-start: 24px;
+  bottom: 22px;
+  margin: 0;
 }
 
 .unit-lookup__result-label {
@@ -184,6 +188,16 @@
 
   .unit-lookup__result {
     min-height: 0;
-    padding: 18px;
+    padding: 18px 18px 76px;
+  }
+
+  .unit-lookup__result--empty {
+    padding-bottom: 18px;
+  }
+
+  .unit-lookup__result .unit-lookup__week-button {
+    inset-inline: 18px;
+    bottom: 18px;
+    width: auto;
   }
 }
